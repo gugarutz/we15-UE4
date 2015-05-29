@@ -31,7 +31,7 @@ public class GameController extends Controller {
 	
 	@Transactional
 	public static Result index() {
-		return redirect(routes.GameController.playGame());
+		return redirect("jeopardy/question");
 	}
 	
 	@play.db.jpa.Transactional(readOnly = true)
@@ -94,7 +94,7 @@ public class GameController extends Controller {
 		Logger.info("[" + request().username() + "] Play the game.");
 		JeopardyGame game = cachedGame(request().username());
 		if(game == null) // e.g., username still in session, but db dropped
-			return redirect(routes.Authentication.login());
+			return redirect("login");
 		if(game.isAnswerPending()) {
 			Logger.info("[" + request().username() + "] Answer pending... redirect");
 			return ok(question.render(game));
@@ -109,7 +109,7 @@ public class GameController extends Controller {
 	public static Result questionSelected() {
 		JeopardyGame game = cachedGame(request().username());
 		if(game == null || !game.isRoundStart())
-			return redirect(routes.GameController.playGame());
+			return redirect("jeopardy");
 		
 		Logger.info("[" + request().username() + "] Questions selected.");		
 		DynamicForm form = Form.form().bindFromRequest();
@@ -129,7 +129,7 @@ public class GameController extends Controller {
 	public static Result submitAnswers() {
 		JeopardyGame game = cachedGame(request().username());
 		if(game == null || !game.isAnswerPending())
-			return redirect(routes.GameController.playGame());
+			return redirect("jeopardy");
 		
 		Logger.info("[" + request().username() + "] Answers submitted.");
 		Dynamic form = Form.form().bindFromRequest().get();
@@ -145,7 +145,7 @@ public class GameController extends Controller {
 		}
 		game.answerHumanQuestion(answerIds);
 		if(game.isGameOver()) {
-			return redirect(routes.GameController.gameOver());
+			return redirect("jeopardy/gameover");
 		} else {
 			return ok(jeopardy.render(game));
 		}
@@ -155,7 +155,7 @@ public class GameController extends Controller {
 	public static Result gameOver() {
 		JeopardyGame game = cachedGame(request().username());
 		if(game == null || !game.isGameOver())
-			return redirect(routes.GameController.playGame());
+			return redirect("jeopardy");
 		
 		Logger.info("[" + request().username() + "] Game over.");
 
