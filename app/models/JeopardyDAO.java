@@ -1,11 +1,10 @@
 package models;
 
-import java.util.List;
+import play.db.jpa.JPA;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
-
-import play.db.jpa.JPA;
+import java.util.List;
 
 /**
  * Provides Data Access methods for JPA
@@ -58,7 +57,7 @@ public class JeopardyDAO implements IGameDAO {
     @Override
     public void persist(BaseEntity entity) {
         // TODO: Implement Method
-        throw new UnsupportedOperationException("Not yet implemented.");
+        em().persist(entity);
     }
 
 
@@ -72,7 +71,7 @@ public class JeopardyDAO implements IGameDAO {
     @Override
     public <T extends BaseEntity> T merge(T entity) {
         // TODO: Implement Method
-        throw new UnsupportedOperationException("Not yet implemented.");
+        return em().merge(entity);
     }
 
     /**
@@ -85,7 +84,7 @@ public class JeopardyDAO implements IGameDAO {
     @Override
     public <T extends BaseEntity> T findEntity(Long id, Class<T> entityClazz) {
         // TODO: Implement Method
-        throw new UnsupportedOperationException("Not yet implemented.");
+        return em().find(entityClazz, id);
     }
 
 
@@ -100,6 +99,7 @@ public class JeopardyDAO implements IGameDAO {
     public <E extends BaseEntity> List<E> findEntities(Class<E> entityClazz) {
         // TODO: Implement Method
         throw new UnsupportedOperationException("Not yet implemented.");
+
     }
 
     /**
