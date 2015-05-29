@@ -6,6 +6,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import java.util.List;
 
+import org.hibernate.Session;
+
 /**
  * Provides Data Access methods for JPA
  */
@@ -97,9 +99,9 @@ public class JeopardyDAO implements IGameDAO {
      */
     @Override
     public <E extends BaseEntity> List<E> findEntities(Class<E> entityClazz) {
-        // TODO: Implement Method
-        throw new UnsupportedOperationException("Not yet implemented.");
-
+        Session session = (Session) em().getDelegate();
+        List list = session.createCriteria(entityClazz).list();
+        return list;
     }
 
     /**
