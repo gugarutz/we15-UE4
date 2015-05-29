@@ -1,5 +1,6 @@
 package models;
 
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -7,17 +8,25 @@ import java.util.List;
 /**
  * Represents a question, which is stored in the DB
  */
+@Entity
 public class Question extends BaseEntity {
 
+    @Column(name = "textDE")
     private String textDE;
+
+    @Column(name = "textEN")
     private String textEN;
+
+    @Column(name = "value")
     private int value;
 
     //The category to which this question belongs to
+    @ManyToOne
     private Category category;
 
 
     //A list of right choices in this category
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "question")
     private List<Answer> answers = new ArrayList<Answer>();
 
 
