@@ -22,6 +22,7 @@ import play.mvc.Security;
 import views.html.jeopardy;
 import views.html.question;
 import views.html.winner;
+import twitter.TwitterStatusMessage;
 
 @Security.Authenticated(Secured.class)
 public class GameController extends Controller {
@@ -156,7 +157,12 @@ public class GameController extends Controller {
 		if(game == null || !game.isGameOver())
 			return redirect(routes.GameController.playGame());
 		
-		Logger.info("[" + request().username() + "] Game over.");		
+		Logger.info("[" + request().username() + "] Game over.");
+
+
+
+
+
 		return ok(winner.render(game));
 	}
 }
