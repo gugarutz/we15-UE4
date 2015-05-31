@@ -96,3 +96,6 @@ jeopardy.chosen2=gewählt
 jeopardy.for=für
 jeopardy.choose=wählen
 jeopardy.answer=antworten
+
+jeopardy.successfultweet=Erfolgreich getwittert
+jeopardy.errortweet=Error beim Twittern.

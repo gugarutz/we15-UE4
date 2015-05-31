@@ -13,6 +13,7 @@ import play.data.DynamicForm;
 import play.data.DynamicForm.Dynamic;
 import play.data.Form;
 import play.db.jpa.Transactional;
+import play.i18n.Messages;
 import play.mvc.Controller;
 import play.mvc.Result;
 import play.mvc.Security;
@@ -169,10 +170,12 @@ public class GameController extends Controller {
                 twitter.publishUuid(new TwitterStatusMessage(game.getHumanPlayer().getUser().getName(),
                         uuid, new Date()));
 
-                Logger.info("Der Text wurde erfolgreich auf Twitter gepublisht!");
+                Logger.info("Erfolgreich getwittert.");
+
+                game.setUuid(uuid);
             } catch (Exception e) {
                 e.printStackTrace();
-                Logger.error("Fehler beim publishen auf Twitter!");
+                Logger.error("Error beim Twittern.");
             }
         }
 

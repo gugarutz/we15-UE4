@@ -18,6 +18,7 @@ import java.util.Random;
 import java.util.TreeMap;
 
 import models.JeopardyUser.Gender;
+import play.i18n.Messages;
 
 
 public class JeopardyGame {	
@@ -31,7 +32,8 @@ public class JeopardyGame {
 	private Map<Long, Question> idToQuestion = new TreeMap<>();
 	private List<Question> openQuestions = new ArrayList<>();
 	private List<Question> chosenQuestions = new ArrayList<>();
-		
+
+	private String uuid = "";
 
 	public JeopardyGame(JeopardyUser human, List<Category> categories) {
 		this.human = createHumanPlayer(human);
@@ -213,5 +215,19 @@ public class JeopardyGame {
 	public boolean hasBeenChosen(Question question) {
 		return chosenQuestions.contains(question);
 	}
-	
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
+
+    public String getTwitterStatus() {
+        if (this.uuid != "")
+            return "Erfolgreich getwittert (" + this.uuid + ").";
+        else
+            return Messages.get("jeopardy.errortweet");
+    }
 }
