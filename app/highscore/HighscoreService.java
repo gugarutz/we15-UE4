@@ -15,7 +15,6 @@ import javax.xml.soap.SOAPMessage;
 import javax.xml.soap.SOAPPart;
 
 import play.Logger;
-import twitter.TwitterStatusMessage;
 import models.JeopardyGame;
 
 public class HighscoreService implements Serializable {
@@ -24,16 +23,11 @@ public class HighscoreService implements Serializable {
     private MessageFactory messageFactory;
 
     public HighscoreService() {
-        try {
-            soapConnectionFactory = SOAPConnectionFactory.newInstance();
-        } catch (UnsupportedOperationException e) {
-            e.printStackTrace();
-        } catch (SOAPException e) {
-            e.printStackTrace();
-        }
 
         try {
+            soapConnectionFactory = SOAPConnectionFactory.newInstance();
             messageFactory = MessageFactory.newInstance();
+
         } catch (SOAPException e) {
             e.printStackTrace();
         }
@@ -41,26 +35,39 @@ public class HighscoreService implements Serializable {
 
     public String postHighscore(JeopardyGame game) {
         SOAPConnection soap = null;
+
         try {
             soap = soapConnectionFactory.createConnection();
             SOAPMessage message = messageFactory.createMessage();
+
             SOAPPart sp = message.getSOAPPart();
+
             sp.getEnvelope().setAttribute("xmlns:data", "http://big.tuwien.ac.at/we/highscore/data");
+
             SOAPBody soapBody = message.getSOAPPart().getEnvelope().getBody();
-            SOAPElement highScoreRequest = soapBody.addChildElement(new QName("http://big.tuwien.ac.at/we/highscore/data", "HighScoreRequest", "data"));
-            SOAPElement userKey = highScoreRequest.addChildElement(new QName("http://big.tuwien.ac.at/we/highscore/data", "UserKey", "data"));
+
+            SOAPElement highScoreRequest = soapBody.addChildElement(
+                    new QName("http://big.tuwien.ac.at/we/highscore/data", "HighScoreRequest", "data"));
+
+            SOAPElement userKey = highScoreRequest.addChildElement(
+                    new QName("http://big.tuwien.ac.at/we/highscore/data", "UserKey", "data"));
             userKey.setValue("3ke93-gue34-dkeu9");
-            SOAPElement userData = highScoreRequest.addChildElement(new QName("http://big.tuwien.ac.at/we/highscore/data", "UserData", "data"));
-            QName tmp = new QName("UserData");
+
+            SOAPElement userData = highScoreRequest.addChildElement(
+                    new QName("http://big.tuwien.ac.at/we/highscore/data", "UserData", "data"));
+
+
+            //loser data:
+
             SOAPElement loser = userData.addChildElement(new QName("Loser"));
+
             if (game.getLoser().getUser().getGender() != null)
                 loser.setAttribute("Gender", game.getLoser().getUser().getGender().toString());
 
-            if (game.getLoser().getUser().getBirthDate() != null) {
+            if (game.getLoser().getUser().getBirthDate() != null)
                 loser.setAttribute("BirthDate", new SimpleDateFormat("yyyy-MM-dd").format(game.getLoser().getUser().getBirthDate()));
-            } else {
+            else
                 loser.setAttribute("BirthDate", new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
-            }
 
             SOAPElement firstname = loser.addChildElement(new QName("FirstName"));
             if (game.getLoser().getUser().getFirstName() != null && !game.getLoser().getUser().getFirstName().equals(""))
@@ -74,20 +81,23 @@ public class HighscoreService implements Serializable {
             else
                 lastname.setValue("Aus Wien");
 
-            SOAPElement password = loser.addChildElement(new QName("Password"));
+            //leeres property password
+            loser.addChildElement(new QName("Password"));
+
             SOAPElement points = loser.addChildElement(new QName("Points"));
             points.setValue(String.valueOf(game.getLoser().getProfit()));
+
+
+            //winner data:
 
             SOAPElement winner = userData.addChildElement(new QName("Winner"));
             if (game.getWinner().getUser().getGender() != null)
                 winner.setAttribute("Gender", game.getWinner().getUser().getGender().toString());
 
-            if (game.getWinner().getUser().getBirthDate() != null) {
+            if (game.getWinner().getUser().getBirthDate() != null)
                 winner.setAttribute("BirthDate", new SimpleDateFormat("yyyy-MM-dd").format(game.getWinner().getUser().getBirthDate()));
-            } else {
+            else
                 winner.setAttribute("BirthDate", new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
-            }
-
 
             firstname = winner.addChildElement(new QName("FirstName"));
             if (game.getWinner().getUser().getFirstName() != null && !game.getWinner().getUser().getFirstName().equals(""))
@@ -102,22 +112,27 @@ public class HighscoreService implements Serializable {
             else
                 lastname.setValue("Aus Wien");
 
-            password = winner.addChildElement(new QName("Password"));
-            //password.setValue(game.getWinner().getUser().getPassword());
+            //leeres property password
+            winner.addChildElement(new QName("Password"));
+
             points = winner.addChildElement(new QName("Points"));
             points.setValue(String.valueOf(game.getWinner().getProfit()));
-            SOAPMessage reply = soap.call(message, "http://playground.big.tuwien.ac.at:8080/highscoreservice/PublishHighScoreService?wsdl");
 
-            String uuid = ((SOAPElement) (reply.getSOAPBody().getChildElements(new QName("http://big.tuwien.ac.at/we/highscore/data", "HighScoreResponse")).next())).getValue();
-            Logger.info("UUID des SOA-request: " + uuid);
+            //soap call
+            SOAPMessage reply = soap.call(message,
+                    "http://playground.big.tuwien.ac.at:8080/highscoreservice/PublishHighScoreService?wsdl");
+
+            //uuid auslesen und loggen
+            String uuid = ((SOAPElement) (reply.getSOAPBody().getChildElements(
+                    new QName("http://big.tuwien.ac.at/we/highscore/data", "HighScoreResponse")).next())).getValue();
+
+            Logger.info("UUID: " + uuid);
 
             return uuid;
         } catch (SOAPException e) {
-            Logger.error("Error beim SOA Req empfangen");
+            Logger.error("SOAP Error");
         }
 
         return null;
     }
-
-
 }
