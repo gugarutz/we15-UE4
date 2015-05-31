@@ -24,9 +24,7 @@ public class Question extends BaseEntity {
     @ManyToOne
     private Category category;
 
-
-    //A list of right choices in this category
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "question")
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "question", cascade = CascadeType.ALL)
     private List<Answer> answers = new ArrayList<Answer>();
 
 

@@ -1,11 +1,8 @@
 package controllers;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
+import highscore.HighscoreService;
 import models.Category;
 import models.JeopardyDAO;
 import models.JeopardyGame;
@@ -156,13 +153,27 @@ public class GameController extends Controller {
 		JeopardyGame game = cachedGame(request().username());
 		if(game == null || !game.isGameOver())
 			return redirect("jeopardy");
-		
+
 		Logger.info("[" + request().username() + "] Game over.");
 
+		HighscoreService hsService = new HighscoreService();
+		System.err.println("Username: " + session().get("userName") + session("userName"));
+		String uuid = hsService.postHighscore(cachedGame(session().get("userName")));
+		// nun publishen wir die uuid auf twitter
+		TwitterClient twitter =  new TwitterClient();
+		// TwitterStatusMessage(String from, String uuid, Date dateTime)
+		if(uuid != null)
+		{
+			try {
+				twitter.publishUuid(new TwitterStatusMessage(game.getHumanPlayer().getUser().getName(),
+						uuid, new Date()));
 
-
-
-
+				Logger.info("Der Text wurde erfolgreich auf Twitter gepublisht!" );
+			} catch (Exception e) {
+				e.printStackTrace();
+				Logger.error("Fehler beim publishen auf Twitter!" );
+			}
+		}
 		return ok(winner.render(game));
 	}
 }
