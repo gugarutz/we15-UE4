@@ -2,6 +2,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
+import data.DBpediaDataInserter;
 import models.Category;
 import play.Application;
 import play.GlobalSettings;
@@ -21,6 +22,13 @@ public class Global extends GlobalSettings {
 		List<Category> categories = JSONDataInserter.insertData(is);
 		Logger.info(categories.size() + " categories from json file '" + file + "' inserted.");
 	}
+
+	@play.db.jpa.Transactional
+	public static void insertDBpediaData() throws Exception {
+		Logger.info("loading data from DBpedia ...");
+		DBpediaDataInserter.fetchQuestions();
+		Logger.info("DBpedia fetched");
+	}
 	
 	@play.db.jpa.Transactional
     public void onStart(Application app) {
@@ -30,6 +38,7 @@ public class Global extends GlobalSettings {
 			@Override
 			public Boolean apply() throws Throwable {
 				insertJSonData();
+				insertDBpediaData();
 				return true;
 			}
 			   
